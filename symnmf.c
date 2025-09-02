@@ -137,7 +137,8 @@ double** sym(struct vector *head, int n) {
         for (j = 0; j < n; j++) {
             xj = curr_j->cords;
             if (i != j) {
-                dist = Euclidean_distance(xi, xj) / -2.0;
+                dist = Euclidean_distance(xi, xj);
+                dist = -dist / (2.0 );
                 A[i][j] = exp(dist);
             } else {
                 A[i][j] = 0.0;
@@ -184,9 +185,81 @@ double** norm(double** A, double** D, int n){
     return W;
 }
 
+void PrintMatrix(double **matrix, int n) {
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            printf("%.4f ", matrix[i][j]);
+        }
+        printf("\n");
+    }
+}
 
-int main() {
-    struct vector* curr = ReadVectors("demo.txt");
-    print_vectors(curr, 6);   
-    return 0;
+void Free_Matrix(double **matrix, int n) {
+    for (int i = 0; i < n; i++) {
+        free(matrix[i]);
+    }
+    free(matrix);
+}
+
+void Free_vector(struct vector *head) {
+    struct vector *curr_vec = head;
+    while (curr_vec != NULL) {
+        struct cord *curr_cord = curr_vec->cords;
+        while (curr_cord != NULL) {
+            struct cord *temp = curr_cord;
+            curr_cord = curr_cord->next;
+            free(temp);
+        }
+        struct vector *temp = curr_vec;
+        curr_vec = curr_vec->next;
+        free(temp);
+    }
+}
+
+int str_eq(const char *a, const char *b) {
+    while (*a && *b) {
+        if (*a != *b) return 0;  
+        a++;
+        b++;
+    }
+    return *a == *b;  
+}
+
+int main(int argc, char *argv[]) {
+
+    char *goal = argv[1];
+    char *filename = argv[2];
+
+
+    struct vector* curr = ReadVectors(filename);
+    // print_vectors(curr, 10);
+
+    int n = count_vectors(curr);
+    if (str_eq(goal,"sym")){
+        double **A = sym(curr, n);
+        PrintMatrix(A,n);
+        Free_Matrix(A,n);
+    }
+
+    if (str_eq(goal,"ddg")){
+        double **A = sym(curr, n);
+        double **D = ddg(A, n);
+        PrintMatrix(D,n);
+        Free_Matrix(A,n);
+        Free_Matrix(D,n);
+    }
+
+    if (str_eq(goal,"norm")){
+        double **A = sym(curr, n);
+        double **D = ddg(A, n);
+        double **W = norm(A, D, n);
+        PrintMatrix(W,n);
+        Free_Matrix(A,n);
+        Free_Matrix(D,n);
+        Free_Matrix(W,n);
+    }
+    
+    Free_vector(curr);
+
+    exit(0);
 }
