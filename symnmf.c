@@ -3,15 +3,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <assert.h>
-struct cord {
-    double value;
-    struct cord *next;
-};
-
-struct vector {
-    struct vector *next;
-    struct cord *cords;
-};
+#include "symnmf.h"
 
 double Euclidean_distance(struct cord *cord1, struct cord *cord2) {
     double distance = 0;
