@@ -18,13 +18,11 @@ double Euclidean_distance(struct cord *cord1, struct cord *cord2) {
 struct vector* ReadVectors(char* filename) {
     FILE *fp = fopen(filename, "r");
     assert(fp);
-
     struct vector *head_vec = NULL, *curr_vec = NULL, *new_vec = NULL;
     struct cord *head_cord = NULL, *curr_cord = NULL, *new_cord = NULL;
     double n;
     char c;
     int first = 1;
-
     while (fscanf(fp, "%lf%c", &n, &c) == 2) {
         new_cord = malloc(sizeof(struct cord));
         if (!new_cord) {
@@ -45,13 +43,12 @@ struct vector* ReadVectors(char* filename) {
         if (c == '\n') {
             new_vec = malloc(sizeof(struct vector));
             if (!new_vec) {
-                perror("malloc failed");
+                assert(new_vec);
                 fclose(fp);
                 return head_vec;
             }
             new_vec->cords = head_cord;
             new_vec->next = NULL;
-
             if (first) {
                 head_vec = curr_vec = new_vec;
                 first = 0;
@@ -59,23 +56,19 @@ struct vector* ReadVectors(char* filename) {
                 curr_vec->next = new_vec;
                 curr_vec = new_vec;
             }
-
             head_cord = curr_cord = NULL; 
         }
     }
-
     if (head_cord != NULL) {
         new_vec = malloc(sizeof(struct vector));
         new_vec->cords = head_cord;
         new_vec->next = NULL;
-
         if (first) {
             head_vec = new_vec;
         } else {
             curr_vec->next = new_vec;
         }
     }
-
     fclose(fp);
     return head_vec;
 }
